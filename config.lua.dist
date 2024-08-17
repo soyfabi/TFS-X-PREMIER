@@ -77,7 +77,6 @@ mysqlSock = ""
 -- You can disable it to save some memory if you don't see any errors at startup.
 allowChangeOutfit = true
 freePremium = false
-kickIdlePlayerAfterMinutes = 15
 maxMessageBuffer = 4
 emoteSpells = true
 classicEquipmentSlots = true

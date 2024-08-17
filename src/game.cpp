@@ -3251,7 +3251,6 @@ bool Game::playerYell(Player* player, const std::string& text)
 bool Game::playerSpeakTo(Player* player, SpeakClasses type, const std::string& receiver,
                          const std::string& text)
 {
-	const Position& playerPos = player->getPosition();
 	Player* toPlayer = getPlayerByName(receiver);
 	if (!toPlayer) {
 		player->sendTextMessage(MESSAGE_STATUS_SMALL, "A player with this name is not online.");

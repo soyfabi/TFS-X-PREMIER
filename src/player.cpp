@@ -1452,19 +1452,7 @@ void Player::onThink(uint32_t interval)
 		MessageBufferTicks = 0;
 		addMessageBuffer();
 	}
-
-	if (!getTile()->hasFlag(TILESTATE_NOLOGOUT) && !isAccessPlayer()) {
-		idleTime += interval;
-		const int32_t kickAfterMinutes = g_config.getNumber(ConfigManager::KICK_AFTER_MINUTES);
-		if (idleTime > (kickAfterMinutes * 60000) + 60000) {
-			kickPlayer(true);
-		} else if (client && idleTime == 60000 * kickAfterMinutes) {
-			std::ostringstream ss;
-			ss << "N�o houve varia��o no seu comportamento por " << kickAfterMinutes << " minutos. Voc� ser� desconectado em um minuto se n�o houver altera��es em suas a��es at� ent�o.";
-			client->sendTextMessage(TextMessage(MESSAGE_STATUS_WARNING, ss.str()));
-		}
-	}
-
+	
 	if (g_game.getWorldType() != WORLD_TYPE_PVP_ENFORCED) {
 		checkSkullTicks(interval / 1000);
 	}
