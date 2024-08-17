@@ -814,10 +814,7 @@ class Player final : public Creature, public Cylinder
 		void onCloseContainer(const Container* container);
 		void onSendContainer(const Container* container);
 		void autoCloseContainers(const Container* container);
-
-		void addAutoLootItem(const uint16_t itemID);
-		void removeAutoLootItem(const uint16_t itemID);
-
+		
 		//inventory
 		void onUpdateInventoryItem(Item* oldItem, Item* newItem);
 		void onRemoveInventoryItem(Item* item);
@@ -1104,8 +1101,7 @@ class Player final : public Creature, public Cylinder
 
 		std::unordered_set<uint32_t> attackedSet;
 		std::unordered_set<uint32_t> VIPList;
-		std::unordered_set<uint16_t> autoLootList;
-
+		
 		std::map<uint8_t, OpenContainer> openContainers;
 		std::map<uint32_t, DepotLocker*> depotLockerMap;
 		std::map<uint32_t, DepotChest*> depotChests;

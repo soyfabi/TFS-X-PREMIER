@@ -1346,21 +1346,6 @@ void Player::onSendContainer(const Container* container)
 	}
 }
 
-// AutoLoot
-void Player::addAutoLootItem(const uint16_t itemID)
-{
-	if(autoLootList.find(itemID) != autoLootList.end()){
-		return;
-	}
-
-	autoLootList.insert(itemID);
-}
-
-void Player::removeAutoLootItem(const uint16_t itemID)
-{
-	autoLootList.erase(itemID);
-}
-
 //inventory
 void Player::onUpdateInventoryItem(Item* oldItem, Item* newItem)
 {

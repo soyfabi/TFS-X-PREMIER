@@ -2386,12 +2386,7 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("Player", "getIdleTime", LuaScriptInterface::luaPlayerGetIdleTime);
 	registerMethod("Player", "setIdleTime", LuaScriptInterface::luaPlayerSetIdleTime);
 	registerMethod("Player", "resetIdleTime", LuaScriptInterface::luaPlayerResetIdleTime);
-
-	// AutoLoot
-	registerMethod("Player", "addAutoLootItem", LuaScriptInterface::luaAddAutoLootItem);
-	registerMethod("Player", "removeAutoLootItem", LuaScriptInterface::luaRemoveAutoLootItem);
-	registerMethod("Player", "getAutoLootList", LuaScriptInterface::luaPlayerGetAutoLootList);
-
+	
 	// Monster
 	registerClass("Monster", "Creature", LuaScriptInterface::luaMonsterCreate);
 	registerMetaMethod("Monster", "__eq", LuaScriptInterface::luaUserdataCompare);
@@ -6035,81 +6030,6 @@ int LuaScriptInterface::luaItemGetWeight(lua_State* L)
 		lua_pushnumber(L, item->getWeight());
 	} else {
 		lua_pushnil(L);
-	}
-	return 1;
-}
-
-// AutoLoot
-int LuaScriptInterface::luaAddAutoLootItem(lua_State* L)
-{
-	//player:addAutoLootItem(name/id)
-	Player* player = getUserdata<Player>(L, 1);
-	if (!player){
-		lua_pushnil(L);
-		return 1;
-	}
-
-	uint16_t itemId;
-	if(isNumber(L, 2)){
-		itemId = getNumber<uint16_t>(L, 2);
-	}else{
-		itemId = Item::items.getItemIdByName(getString(L, 2));
-		if (itemId == 0){
-			lua_pushnil(L);
-			return 1;
-		}
-	}
-	std::cout << itemId << std::endl;
-	player->addAutoLootItem(itemId);
-	pushBoolean(L, true);
-	return 1;
-}
-
-int LuaScriptInterface::luaRemoveAutoLootItem(lua_State* L)
-{
-	//player:removeAutoLootItem(name/id)
-	Player* player = getUserdata<Player>(L, 1);
-	if (!player){
-		lua_pushnil(L);
-		return 1;
-	}
-
-	uint16_t itemId;
-	if(isNumber(L, 2)){
-		itemId = getNumber<uint16_t>(L, 2);
-	}else{
-		itemId = Item::items.getItemIdByName(getString(L, 2));
-		if (itemId == 0){
-			lua_pushnil(L);
-			return 1;
-		}
-	}
-	player->removeAutoLootItem(itemId);
-	pushBoolean(L, true);
-	return 1;
-}
-
-int LuaScriptInterface::luaPlayerGetAutoLootList(lua_State* L)
-{
-	// player:getAutoLootList()
-	Player* player = getUserdata<Player>(L, 1);
-	if (!player){
-		lua_pushnil(L);
-		return 1;
-	}
-
-	auto autoLootList = player->autoLootList;
-
-	if (autoLootList.size() == 0){
-		lua_pushnil(L);
-		return 1;
-	}
-
-	int index = 0;
-	lua_createtable(L, autoLootList.size(), 0);
-	for (auto i: autoLootList){
-		lua_pushnumber(L, i);
-		lua_rawseti(L, -2, ++index);
 	}
 	return 1;
 }

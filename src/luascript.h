@@ -682,12 +682,7 @@ class LuaScriptInterface
 		static int luaItemGetFluidType(lua_State* L);
 		static int luaItemGetWeight(lua_State* L);
 		static int luaItemGetWorth(lua_State* L);
-
-		// AutoLoot
-		static int luaAddAutoLootItem(lua_State* L);
-		static int luaRemoveAutoLootItem(lua_State* L);
-		static int luaPlayerGetAutoLootList(lua_State* L);
-
+		
 		static int luaItemGetSubType(lua_State* L);
 
 		static int luaItemGetName(lua_State* L);
