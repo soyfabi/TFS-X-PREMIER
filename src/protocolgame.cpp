@@ -34,6 +34,8 @@
 #include "scheduler.h"
 #include "monster.h"
 
+#include <fmt/format.h>
+
 extern ConfigManager g_config;
 extern Actions actions;
 extern CreatureEvents* g_creatureEvents;
@@ -75,28 +77,28 @@ void ProtocolGame::login(const std::string& name, uint32_t accountId, OperatingS
 		player->incrementReferenceCounter();
 
 		if (!IOLoginData::preloadPlayer(player, name)) {
-			disconnectClient("N�o foi poss�vel carregar seu personagem.");
+			disconnectClient("Your character could not be loaded.");
 			return;
 		}
 
 		player->setID();
 		if (IOBan::isPlayerNamelocked(player->getGUID())) {
-			disconnectClient("Seu personagem foi bloqueado pelo nome.");
+			disconnectClient("Your character has been namelocked.");
 			return;
 		}
 
 		if (g_game.getGameState() == GAME_STATE_CLOSING && !player->hasFlag(PlayerFlag_CanAlwaysLogin)) {
-			disconnectClient("O jogo est� desligando.\nPor favor, tente novamente mais tarde.");
+			disconnectClient("The game is just going down.\nPlease try again later.");
 			return;
 		}
 
 		if (g_game.getGameState() == GAME_STATE_CLOSED && !player->hasFlag(PlayerFlag_CanAlwaysLogin)) {
-			disconnectClient("O servidor est� fechado no momento.\nPor favor, tente novamente mais tarde.");
+			disconnectClient("Server is currently closed.\nPlease try again later.");
 			return;
 		}
 
 		if (g_config.getBoolean(ConfigManager::ONE_PLAYER_ON_ACCOUNT) && player->getAccountType() < ACCOUNT_TYPE_GAMEMASTER && g_game.getPlayerByAccount(player->getAccount())) {
-			disconnectClient("Voc� pode fazer login apenas com um jogador\n na sua conta ao mesmo tempo.");
+			disconnectClient("You may only login with one character\nof your account at the same time.");
 			return;
 		}
 
@@ -109,11 +111,10 @@ void ProtocolGame::login(const std::string& name, uint32_t accountId, OperatingS
 
 				std::ostringstream ss;
 				if (banInfo.expiresAt > 0) {
-					ss << "Sua conta foi banida at� " << formatDateShort(banInfo.expiresAt) << ".\n\nRaz�o:\n" << banInfo.reason;
+					disconnectClient(fmt::format("Your account has been banned until {:s} by {:s}.\n\nReason specified:\n{:s}", formatDateShort(banInfo.expiresAt), banInfo.bannedBy, banInfo.reason));
 				} else {
-					ss << "Sua conta foi permanentemente banida.\n\nRaz�o:\n" << banInfo.reason;
+					disconnectClient(fmt::format("Your account has been permanently banned by {:s}.\n\nReason specified:\n{:s}", banInfo.bannedBy, banInfo.reason));
 				}
-				disconnectClient(ss.str());
 				return;
 			}
 		}
@@ -121,14 +122,10 @@ void ProtocolGame::login(const std::string& name, uint32_t accountId, OperatingS
 		std::size_t currentSlot;
 		if (!WaitingList::getInstance().clientLogin(player, currentSlot)) {
 			int64_t retryTime = WaitingList::getTime(currentSlot);
-			std::ostringstream ss;
-
-			ss << "Muitos jogadores online.\nVoc� est� no lugar "
-			   << currentSlot << " na lista de espera.";
-
+			
 			auto output = OutputMessagePool::getOutputMessage();
 			output->addByte(0x16);
-			output->addString(ss.str());
+			output->addString(fmt::format("Too many players online.\nYou are at place {:d} on the waiting list.", currentSlot));
 			output->addByte(static_cast<uint8_t>(retryTime));
 			send(output);
 			disconnect();
@@ -136,7 +133,7 @@ void ProtocolGame::login(const std::string& name, uint32_t accountId, OperatingS
 		}
 
 		if (!IOLoginData::loadPlayerById(player, player->getGUID())) {
-			disconnectClient("N�o foi poss�vel carregar seu personagem.");
+			disconnectClient("Your character could not be loaded.");
 			return;
 		}
 
@@ -144,7 +141,7 @@ void ProtocolGame::login(const std::string& name, uint32_t accountId, OperatingS
 
 		if (!g_game.placeCreature(player, player->getLoginPosition())) {
 			if (!g_game.placeCreature(player, player->getTemplePosition(), false, true)) {
-				disconnectClient("A posi��o do templo est� errada.");
+				disconnectClient("Temple position is wrong. Contact the administrator.");
 				return;
 			}
 		}
@@ -160,7 +157,7 @@ void ProtocolGame::login(const std::string& name, uint32_t accountId, OperatingS
 	} else {
 		if (eventConnect != 0 || !g_config.getBoolean(ConfigManager::REPLACE_KICK_ON_LOGIN)) {
 			//Already trying to connect
-			disconnectClient("Voc� j� est� logado.");
+			disconnectClient("You are already logged in.");
 			return;
 		}
 
@@ -182,7 +179,7 @@ void ProtocolGame::connect(uint32_t playerId, OperatingSystem_t operatingSystem)
 
 	Player* foundPlayer = g_game.getPlayerByID(playerId);
 	if (!foundPlayer || foundPlayer->client) {
-		disconnectClient("Voc� j� est� logado.");
+		disconnectClient("You are already logged in.");
 		return;
 	}
 
@@ -275,7 +272,7 @@ void ProtocolGame::onRecvFirstMessage(NetworkMessage& msg)
 	std::string password = msg.getString();
 
 	if (accountName.empty()) {
-		disconnectClient("Voc� deve inserir o nome da sua conta.");
+		disconnectClient("Account name or password is not correct.");
 		return;
 	}
 
@@ -293,19 +290,17 @@ void ProtocolGame::onRecvFirstMessage(NetworkMessage& msg)
 	}
 
 	if (version < CLIENT_VERSION_MIN || version > CLIENT_VERSION_MAX) {
-		std::ostringstream ss;
-		ss << "Somente clients com protocolo " << CLIENT_VERSION_STR << " s�o permitidos!";
-		disconnectClient(ss.str());
+		disconnectClient(fmt::format("Only clients with protocol {:s} allowed!", CLIENT_VERSION_STR));
 		return;
 	}
 
 	if (g_game.getGameState() == GAME_STATE_STARTUP) {
-		disconnectClient("Gameworld est� iniciando. Por favor, espere.");
+		disconnectClient("Gameworld is starting up. Please wait.");
 		return;
 	}
 
 	if (g_game.getGameState() == GAME_STATE_MAINTAIN) {
-		disconnectClient("O Gameworld est� em manuten��o. Reconecte-se daqui a pouco.");
+		disconnectClient("Gameworld is under maintenance. Please re-connect in a while.");
 		return;
 	}
 
@@ -315,15 +310,13 @@ void ProtocolGame::onRecvFirstMessage(NetworkMessage& msg)
 			banInfo.reason = "(none)";
 		}
 
-		std::ostringstream ss;
-		ss << "Seu IP foi banido at� " << formatDateShort(banInfo.expiresAt) << ".\n\nRaz�o:\n" << banInfo.reason;
-		disconnectClient(ss.str());
+		disconnectClient(fmt::format("Your IP has been banned until {:s} by {:s}.\n\nReason specified:\n{:s}", formatDateShort(banInfo.expiresAt), banInfo.bannedBy, banInfo.reason));
 		return;
 	}
 
 	uint32_t accountId = IOLoginData::gameworldAuthentication(accountName, password, characterName);
 	if (accountId == 0) {
-		disconnectClient("O nome ou a senha da conta n�o est�o corretos.");
+		disconnectClient("Account name or password is not correct.");
 		return;
 	}
 
