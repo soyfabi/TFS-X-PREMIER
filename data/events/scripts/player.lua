@@ -132,3 +132,9 @@ function Player:onSay(message)
 		return true
 	end
 end
+
+function Player:onInventoryUpdate(item, slot, equip)
+	if hasEvent.onInventoryUpdate then
+		Event.onInventoryUpdate(self, item, slot, equip)
+	end
+end
