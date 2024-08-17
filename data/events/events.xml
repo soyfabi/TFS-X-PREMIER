@@ -6,13 +6,15 @@
 	<event class="Creature" method="onTargetCombat" enabled="1" />
 	<event class="Creature" method="onHear" enabled="0" />
 	<event class="Creature" method="onChangeZone" enabled="1" />
-	<event class="Player" method="onInventoryUpdate" enabled="1" />
 
 	<!-- Party methods -->
 	<event class="Party" method="onJoin" enabled="0" />
 	<event class="Party" method="onLeave" enabled="0" />
 	<event class="Party" method="onDisband" enabled="0" />
 	<event class="Party" method="onShareExperience" enabled="1" />
+	<event class="Party" method="onInvite" enabled="0" />
+	<event class="Party" method="onRevokeInvitation" enabled="0" />
+	<event class="Party" method="onPassLeadership" enabled="0" />
 
 	<!-- Player methods -->
 	<event class="Player" method="onLook" enabled="1" />
@@ -32,6 +34,7 @@
 	<event class="Player" method="onLoseExperience" enabled="0" />
 	<event class="Player" method="onGainSkillTries" enabled="1" />
 	<event class="Player" method="onSay" enabled="1" />
+	<event class="Player" method="onInventoryUpdate" enabled="1" />
 
 	<!-- Monster methods -->
 	<event class="Monster" method="onDropLoot" enabled="1" />
