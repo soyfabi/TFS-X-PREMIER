@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<creaturescripts>
+	<!-- Others -->
+	<event type="login" name="PlayerLogin" script="others/login.lua" />
+	<event type="logout" name="PlayerLogout" script="others/logout.lua" />
+	<event type="login" name="RegenerateStamina" script="others/regeneratestamina.lua" />
+	<event type="death" name="PlayerDeath" script="others/playerdeath.lua" />
+	<event type="death" name="DropLoot" script="others/droploot.lua" />
+</creaturescripts>
