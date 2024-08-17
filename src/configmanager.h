@@ -61,6 +61,7 @@ class ConfigManager
 			SPOOF_ENABLED,
 			REMOVE_ON_DESPAWN,
 			PACKET_COMPRESSION,
+			SORT_LOOT_BY_CHANCE,
 
 			LAST_BOOLEAN_CONFIG /* this must be the last one */
 		};

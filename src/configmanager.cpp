@@ -267,6 +267,7 @@ bool ConfigManager::load()
 	boolean[SPOOF_ENABLED] = getGlobalBoolean(L, "spoofEnabled", false);
 	boolean[REMOVE_ON_DESPAWN] = getGlobalBoolean(L, "removeOnDespawn", true);
 	boolean[PACKET_COMPRESSION] = getGlobalBoolean(L, "packetCompression", true);
+	boolean[SORT_LOOT_BY_CHANCE] = getGlobalBoolean(L, "sortLootByChance", false);
 
 	string[DEFAULT_PRIORITY] = getGlobalString(L, "defaultPriority", "high");
 	string[SERVER_NAME] = getGlobalString(L, "serverName", "");
